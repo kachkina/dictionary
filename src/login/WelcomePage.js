@@ -2,6 +2,8 @@ import React from 'react';
 
 import Login from './Login';
 
+import { login } from '../api';
+
 
 class WelcomePage extends React.Component {
   state ={
@@ -20,6 +22,7 @@ class WelcomePage extends React.Component {
   }
   onSigninSubmit = (e) =>{
     e.preventDefault();
+    login(this.state.email, this.state.password);
     console.log('email: ' + this.state.email + ', password: ' + this.state.password);
   }
   render() {

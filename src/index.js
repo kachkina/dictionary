@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { CookiesProvider } from 'react-cookie'
 
 import configureStore from "./reducers/store";
 import * as serviceWorker from './serviceWorker';
@@ -13,12 +14,14 @@ import "./index.css";
 const store = configureStore();
 
 ReactDOM.render(
-    <Provider store={store}>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
-        </ThemeProvider>
-    </Provider>,
+    <CookiesProvider>
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App />
+            </ThemeProvider>
+        </Provider>
+    </CookiesProvider>,
     document.getElementById("root")
 );
 

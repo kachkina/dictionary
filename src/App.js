@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
-import { withCookies, Cookies } from 'react-cookie';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
 
 import Registration from './login/Registration';
@@ -13,27 +12,26 @@ import { getUser } from './api';
 
 function App(props) {
   const dispatch = useDispatch();
+  console.log(props)
   useEffect(() => {
-    dispatch({
-      type: 'GET_STORE'
-    });
-    window.addEventListener('beforeunload', () => {
-      dispatch({
-        type: 'SAVE_STORE'
-      });
-    });
-    getUser()
+    const getCurrentUser = async () => {
+      const user = await getUser();
+      if (!user.error) {
+        props.history.replace('/');
+      } else {
+        props.history.replace('/login');
+      }
+    }
+    getCurrentUser();  
   }, []);
   return (
-    <Router>
-      <Switch>
-        <Route exact path='/' component={Welcom} />
-        <Route path='/login' component={WelcomePage} />
-        <Route path='/registration' component={Registration} />
-        <Redirect to='/' />
-      </Switch>
-    </Router>
+    <Switch>
+      <Route exact path='/' component={Welcom} />
+      <Route exact path='/login' component={WelcomePage} />
+      <Route path='/registration' component={Registration} />
+      <Redirect to='/' />
+    </Switch>
   );
 }
 
-export default withCookies(App);
+export default withRouter(App);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom'
 
 import Login from './Login';
 
@@ -20,10 +21,12 @@ class WelcomePage extends React.Component {
       password: e.target.value
     })
   }
-  onSigninSubmit = (e) =>{
+  onSigninSubmit = async (e) =>{
     e.preventDefault();
-    login(this.state.email, this.state.password);
-    console.log('email: ' + this.state.email + ', password: ' + this.state.password);
+    const user = await login(this.state.email, this.state.password);
+    if (!user.error) {
+      this.props.history.replace('/');
+    }
   }
   render() {
     return(
@@ -38,4 +41,4 @@ class WelcomePage extends React.Component {
   }
 }
 
-export default WelcomePage;
+export default withRouter(WelcomePage);

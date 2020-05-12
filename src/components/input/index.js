@@ -8,6 +8,8 @@ import match from 'autosuggest-highlight/match';
 import IconButton from '@material-ui/core/IconButton';
 import DoneIcon from '@material-ui/icons/Done';
 import AddIcon from '@material-ui/icons/Add';
+import { addWord, upadteWord } from '../../api';
+import { ADD_WORD, UPDATE_WORD_SUCCESS } from '../../reducers/constants';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -27,7 +29,27 @@ const useStyles = makeStyles(theme => ({
 export default function Input({ newWord, setNewWord }) {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const data = useSelector(state => state.dictionary);
+    const data = useSelector(state => state.dictionary.dictionary);
+    const addNewWord = async (value) => {
+        const newWord = await addWord(value);
+        if (!newWord.error) {
+            dispatch({
+                type: ADD_WORD,
+                payload: newWord.data
+            })
+        }
+    }
+
+    const updateWordAction = async (word) => {
+        const updatedWord = await upadteWord(word);
+        if (!updatedWord.error) {
+            dispatch({
+                type: UPDATE_WORD_SUCCESS,
+                payload: updatedWord.data,
+            });
+        }
+    }
+
 
     const [value, setValue] = useState(null);
     const [options, setOptions] = useState([]);
@@ -66,15 +88,16 @@ export default function Input({ newWord, setNewWord }) {
                 );
             }}
             onChange={(e, val) => {
-                if (val && val.text.trim()) {
-                    dispatch({
-                        type: 'ADD_WORD', payload: val,
-                    });
+                console.log(val)
+                if (val && val.text.trim() && val.id === 'new') {
+                    addNewWord(val.text);
+                } else if(val && val._id !== 'new') {
+                    updateWordAction({ ...val, type: 'entered'})
                 }
                 setValue({text: ''})
             }}
             autoComplete
-            includeInputInList	
+            includeInputInList
             value={value}
             onInputChange={(e, val) => {
                 const sameOption = options.find(item => item.text.toLowerCase() === val.trim());

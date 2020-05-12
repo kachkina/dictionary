@@ -11,6 +11,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import ReplyIcon from '@material-ui/icons/Reply';
 
+import { upadteWord } from '../../api';
+
+import { UPDATE_WORD_SUCCESS } from '../../reducers/constants';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -31,28 +34,37 @@ const useStyles = makeStyles(theme => ({
 export default function Dictionary() {
     const classes = useStyles();
     const dispatch = useDispatch();
+    
+    const data = useSelector(state => state.dictionary.dictionary);
 
-
-    const data = useSelector(state => state.dictionary);
+    const updateWordAction = async (word) => {
+        const updatedWord = await upadteWord(word);
+        if (!updatedWord.error) {
+            dispatch({
+                type: UPDATE_WORD_SUCCESS,
+                payload: updatedWord.data,
+            });
+        }
+    }
     return (
         <Paper className={classes.root}>
             <List className={classes.roots}>
                 {data.map(value => {
-                    const labelId = `checkbox-list-label-${value.id}`;
+                    const labelId = `checkbox-list-label-${value._id}`;
 
                     return (
                     <ListItem
-                        key={value.id}
+                        key={value._id}
                         role={undefined}
                         dense
                         button
                         onClick={() => {
-                            dispatch({ type: 'ADD_TO_WORD', payload: value })
+                            updateWordAction({ ...value, type: 'entered' });
                         }}
                     >
                         <ListItemIcon>
                             <IconButton>
-                                <ReplyIcon style={{fontSize: 'large',}}/>
+                                <ReplyIcon style={{fontSize: 'large'}}/>
                             </IconButton>
                         </ListItemIcon>
                         <ListItemText id={labelId} primary={value.text} />
